@@ -25,7 +25,7 @@ async function setBackground(theme) {
     let background
     let body = document.body;
     body.className = theme ? 'dark global' : 'light global';
-    if (fs.existsSync(`${__dirname}/assets/images/background/easterEgg`) && Math.random() < 0.005) {
+    if (fs.existsSync(`${__dirname}/assets/images/background/easterEgg`) && Math.random() < 0.1) {
         let backgrounds = fs.readdirSync(`${__dirname}/assets/images/background/easterEgg`);
         let Background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
         background = `url(./assets/images/background/easterEgg/${Background})`;
