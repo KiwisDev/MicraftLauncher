@@ -273,16 +273,18 @@
     padding-right: 1.9rem;
 }
 
-.play-instance:hover {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
+.play-instance div:hover {
+    background: var(--element-color);
+    color: white;
+
+}
+
+.play-instance button:hover {
     border: solid 3px var(--element-color);
     background: var(--element-color);
-    border-radius: 5px;
+    color: white;
     height: 3.2rem;
-    padding-right: 1.9rem;
+
 }
 
 .play-btn {

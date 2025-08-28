@@ -1,7 +1,7 @@
 {
     "name": "Micraft-Launcher",
     "preductname": "Micraft Launcher",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "Launcher Minecraft",
     "main": "src/app.js",
     "author": {
@@ -9,7 +9,7 @@
         "email": "None",
         "url": "https://gitlab.com/Tactician_sh"
     },
-    "url": "http://195.201.205.241:8080/launcher-files/",
+    "url": "http://37.187.139.41:8080/launcher-files/",
     "scripts": {
         "start": "cross-env-shell NODE_ENV=dev electron .",
         "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
