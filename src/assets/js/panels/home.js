@@ -1,6 +1,6 @@
 /**
  * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 import { config, database, logger, changePanel, appdata, setStatus, pkg, popup } from '../utils.js'
 
@@ -209,6 +209,32 @@ class Home {
         let infoStarting = document.querySelector(".info-starting-game-text")
         let progressBar = document.querySelector('.progress-bar')
 
+        // ── Per-instance Java config ──────────────────────────────────────
+        let instanceCfg = configClient?.instance_java_config?.[options.name] || {};
+
+        // Java path: instance override > global > null (embedded)
+        let javaPath = instanceCfg.java_path || configClient.java_config.java_path || null;
+
+        // JVM args: merge server-side args + per-instance args
+        let serverJvmArgs = options.jvm_args ? options.jvm_args : [];
+        let instanceJvmArgs = instanceCfg.jvm_args ? instanceCfg.jvm_args : [];
+        let mergedJvmArgs = [...serverJvmArgs, ...instanceJvmArgs];
+
+        // RAM: instance override > global
+        let memory;
+        if (instanceCfg.ram_override && instanceCfg.java_memory) {
+            memory = {
+                min: `${instanceCfg.java_memory.min * 1024}M`,
+                max: `${instanceCfg.java_memory.max * 1024}M`
+            };
+        } else {
+            memory = {
+                min: `${configClient.java_config.java_memory.min * 1024}M`,
+                max: `${configClient.java_config.java_memory.max * 1024}M`
+            };
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         let opt = {
             url: options.url,
             authenticator: authenticator,
@@ -231,10 +257,10 @@ class Home {
             ignored: [...options.ignored],
 
             java: {
-                path: configClient.java_config.java_path,
+                path: javaPath,
             },
 
-            JVM_ARGS:  options.jvm_args ? options.jvm_args : [],
+            JVM_ARGS:  mergedJvmArgs,
             GAME_ARGS: options.game_args ? options.game_args : [],
 
             screen: {
@@ -242,10 +268,7 @@ class Home {
                 height: configClient.game_config.screen_size.height
             },
 
-            memory: {
-                min: `${configClient.java_config.java_memory.min * 1024}M`,
-                max: `${configClient.java_config.java_memory.max * 1024}M`
-            }
+            memory: memory
         }
 
         launch.Launch(opt);

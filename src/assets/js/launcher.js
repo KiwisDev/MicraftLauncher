@@ -1,6 +1,6 @@
 /**
  * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 // import panel
 import Login from './panels/login.js';
@@ -100,6 +100,7 @@ class Launcher {
                         max: 4
                     }
                 },
+                instance_java_config: {},
                 game_config: {
                     screen_size: {
                         width: 854,

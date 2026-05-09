@@ -1,24 +1,44 @@
 .global {
-    --element-color: #ff0000;
-    --transition: all 0.5s cubic-bezier(1, 0.46, 0, 1.29);
-    --dark-color: #292929;
-    --light-color: rgb(245, 245, 245);
+    --element-color: #ff2020;
+    --element-color-dim: rgba(255, 32, 32, 0.18);
+    --element-color-glow: rgba(255, 32, 32, 0.35);
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --dark-color: #1a1a1a;
+    --light-color: #f0f0f0;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --font-main: 'Poppins', sans-serif;
 }
 
 .dark {
-    --color: #F5F5F5;
-    --background: #292929;
-    --background-element: #424242;
-    --background-transparent: #2c2c2ccc;
-    --shadow: rgba(25, 25, 25, 0.7);
-    --svg-color: brightness(0) saturate(100%) invert(100%) sepia(55%) saturate(23%) hue-rotate(236deg) brightness(108%) contrast(92%);
+    --color: #e8e8e8;
+    --color-muted: rgba(232, 232, 232, 0.5);
+    --background: #111111;
+    --background-element: #1e1e1e;
+    --background-surface: #181818;
+    --background-transparent: rgba(20, 20, 20, 0.75);
+    --background-glass: rgba(255, 255, 255, 0.04);
+    --border: rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.14);
+    --shadow: rgba(0, 0, 0, 0.6);
+    --shadow-red: rgba(255, 32, 32, 0.25);
+    --svg-color: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(90%);
+    --scrollbar: rgba(255,255,255,0.08);
 }
 
 .light {
-    --color: #151515;
-    --background: rgb(245, 245, 245);
-    --background-element: #c2c2c2;
-    --background-transparent: rgba(204, 204, 204, 0.8);
-    --shadow: rgba(208, 208, 208, 0.7);
-    --svg-color: brightness(0) saturate(100%) invert(0%) sepia(5%) saturate(1719%) hue-rotate(357deg) brightness(94%) contrast(84%);
+    --color: #1a1a1a;
+    --color-muted: rgba(26, 26, 26, 0.5);
+    --background: #f0f0f0;
+    --background-element: #e0e0e0;
+    --background-surface: #e8e8e8;
+    --background-transparent: rgba(230, 230, 230, 0.85);
+    --background-glass: rgba(0, 0, 0, 0.03);
+    --border: rgba(0, 0, 0, 0.08);
+    --border-hover: rgba(0, 0, 0, 0.16);
+    --shadow: rgba(0, 0, 0, 0.12);
+    --shadow-red: rgba(255, 32, 32, 0.2);
+    --svg-color: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(20%) contrast(100%);
+    --scrollbar: rgba(0,0,0,0.12);
 }

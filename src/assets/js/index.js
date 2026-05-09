@@ -1,6 +1,6 @@
-/**
+/*
  * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
 const { ipcRenderer, shell } = require('electron');
@@ -53,6 +53,13 @@ class Splash {
     async checkUpdate() {
         this.setStatus(`Recherche de mise à jour...`);
 
+        // En dev ou Linux non-AppImage : skip l'updater, aller directement au launcher
+        if (process.env.NODE_ENV === 'dev' ||
+            (process.platform === 'linux' && !process.env.APPIMAGE)) {
+            console.log('[Dev] Skip update check');
+            return this.maintenanceCheck();
+        }
+
         ipcRenderer.invoke('update-app').then().catch(err => {
             return this.shutdown(`erreur lors de la recherche de mise à jour :<br>${err.message}`);
         });
@@ -91,8 +98,8 @@ class Splash {
     }
 
     async dowloadUpdate() {
-        const repoURL = pkg.repository.url.replace("git+", "").replace(".git", "").replace("https://github.com/", "").split("/");
-        const githubAPI = await nodeFetch('https://api.github.com').then(res => res.json()).catch(err => err);
+        const repoURL = pkg.repository.url.replace("git+", "").replace(".git", "").replace("https://gitlab.com/", "").split("/");
+        const githubAPI = await nodeFetch('https://gitlab.com/api/v4').then(res => res.json()).catch(err => err);
 
         const githubAPIRepoURL = githubAPI.repository_url.replace("{owner}", repoURL[0]).replace("{repo}", repoURL[1]);
         const githubAPIRepo = await nodeFetch(githubAPIRepoURL).then(res => res.json()).catch(err => err);
@@ -114,8 +121,15 @@ class Splash {
 
 
     async maintenanceCheck() {
+        // En dev, on bypass le check serveur et on lance directement
+        if (process.env.NODE_ENV === 'dev') {
+            console.log('[Dev] Skip maintenance check');
+            return this.startLauncher();
+        }
+
         config.GetConfig().then(res => {
             if (res.maintenance) return this.shutdown(res.maintenance_message);
+            console.log("START LAUNCHER -------------");
             this.startLauncher();
         }).catch(e => {
             console.error(e);
@@ -125,6 +139,7 @@ class Splash {
 
     startLauncher() {
         this.setStatus(`Démarrage du launcher`);
+        console.log("DEMARRAGE DU BEUURE");
         ipcRenderer.send('main-window-open');
         ipcRenderer.send('update-window-close');
     }

@@ -1,6 +1,6 @@
 /**
  * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)/
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0/
  */
 
 'use strict';
@@ -37,10 +37,10 @@ export default class Slider {
         this.setMinValue(this.minValue);
         this.setMaxValue(this.maxValue);
 
-        this.touchLeft.addEventListener('mousedown', (event) => this.onStart(document.querySelector('.slider-touch-left'), event));
-        this.touchRight.addEventListener('mousedown', (event) => this.onStart(document.querySelector('.slider-touch-right'), event));
-        this.touchLeft.addEventListener('touchstart', (event) => this.onStart(document.querySelector('.slider-touch-left'), event));
-        this.touchRight.addEventListener('touchstart', (event) => this.onStart(document.querySelector('.slider-touch-right'), event));
+        this.touchLeft.addEventListener('mousedown', (event) => this.onStart(this.touchLeft, event));
+        this.touchRight.addEventListener('mousedown', (event) => this.onStart(this.touchRight, event));
+        this.touchLeft.addEventListener('touchstart', (event) => this.onStart(this.touchLeft, event));
+        this.touchRight.addEventListener('touchstart', (event) => this.onStart(this.touchRight, event));
     }
 
     reset() {

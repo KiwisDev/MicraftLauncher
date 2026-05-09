@@ -1,6 +1,6 @@
 /**
  * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
 "use strict";
@@ -39,10 +39,10 @@ function createWindow() {
     updateWindow.setMenuBarVisibility(false);
     updateWindow.loadFile(path.join(`${app.getAppPath()}/src/index.html`));
     updateWindow.once('ready-to-show', () => {
-        if (updateWindow) {
-            if (dev) updateWindow.webContents.openDevTools({ mode: 'detach' })
-            updateWindow.show();
-        }
+      if (updateWindow) {
+          updateWindow.webContents.openDevTools({ mode: 'detach' }); // ← ajoute cette ligne
+          updateWindow.show();
+      }
     });
 }
 

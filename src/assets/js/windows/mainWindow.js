@@ -1,6 +1,6 @@
 /**
  * @author Luuxis
- * Luuxis License v1.0 (voir fichier LICENSE pour les détails en FR/EN)
+ * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
 
 const { app, BrowserWindow, Menu } = require("electron");
@@ -37,12 +37,15 @@ function createWindow() {
             nodeIntegration: true
         },
     });
+    console.log("j'ESSAYE DE FAIRE DU BEURRE");
     Menu.setApplicationMenu(null);
     mainWindow.setMenuBarVisibility(false);
     mainWindow.loadFile(path.join(`${app.getAppPath()}/src/launcher.html`));
     mainWindow.once('ready-to-show', () => {
         if (mainWindow) {
+            console.log("MAIN WINDOW");
             if (dev) mainWindow.webContents.openDevTools({ mode: 'detach' })
+           console.log("AHAHAHHA LE BUTTER");
             mainWindow.show()
         }
     });

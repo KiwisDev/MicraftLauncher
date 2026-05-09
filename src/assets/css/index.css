@@ -1,129 +1,169 @@
 @import "font.css";
 @import 'theme.css';
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-    background-color: var(--background);
-    font-family: "Poppins";
-    letter-spacing: 0px;
+    background: var(--background);
+    font-family: var(--font-main);
+    width: 400px;
+    height: 500px;
+    overflow: hidden;
 }
 
-img {
-    -webkit-user-drag: none;
-    user-select: none;
+img { -webkit-user-drag: none; user-select: none; }
+
+/* ── Splash screen ────────────────────────────────────────── */
+#splash {
+    position: relative;
+    width: 400px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: var(--background);
+}
+
+/* Subtle grid texture */
+#splash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* Red accent line top */
+#splash::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--element-color);
 }
 
 .splash {
-    position: absolute;
-    top: 180px;
-    left: 50%;
-    transform: translate(-50%);
-    width: 140px;
-    height: 140px;
-    transition: opacity .3s, top 1.5s;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-md);
     opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    image-rendering: pixelated;
+    z-index: 1;
+    margin-bottom: 20px;
+    box-shadow: 0 0 0 1px var(--border), 0 8px 32px var(--shadow);
 }
 
 .splash.opacity {
     opacity: 1;
-}
-
-.splash.translate {
-    top: 129px;
+    transform: translateY(0) scale(1);
 }
 
 .splash-message {
-    position: absolute;
-    top: 289px;
-    left: 0px;
-    width: 400px;
-    font: normal normal bold 19px/29px Poppins;
-    text-align: center;
-    letter-spacing: 0px;
-    transition: opacity 1.5s;
+    position: relative;
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--color);
+    text-align: center;
+    letter-spacing: 0.02em;
     opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease 0.1s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+    z-index: 1;
+    padding: 0 2rem;
+    margin-bottom: 4px;
 }
 
 .splash-message.opacity {
     opacity: 1;
+    transform: translateY(0);
 }
 
 .splash-author {
-    position: absolute;
-    top: 326px;
-    left: 0px;
-    width: 400px;
+    position: relative;
+    font-size: 0.7rem;
+    color: var(--color-muted);
     text-align: center;
-    transition: opacity 1.5s;
-    font: normal normal normal 9px/13px Poppins;
-    color: var(--color);
     opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.6s ease 0.15s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    z-index: 1;
+    margin-bottom: 28px;
 }
 
-.splash-author .author {
-    font: normal normal bold 9px/13px Poppins;
-}
+.splash-author .author { font-weight: 700; color: var(--element-color); }
 
 .splash-author.opacity {
     opacity: 1;
+    transform: translateY(0);
 }
 
 .message {
-    position: absolute;
-    top: 347px;
-    left: 0px;
-    width: 400px;
+    position: relative;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
     text-align: center;
-    transition: opacity 1.5s;
-    font: normal normal bold 18px/27px Poppins;
-    color: var(--color);
     opacity: 0;
-}
-
-.download-update {
-    position: absolute;
-    left: 25%;
-    margin-top: 20px;
-    width: 200px;
-    font: normal normal bold 22px / 45px Poppins;
-    color: var(--color);
-    border: 2px solid var(--color);
-    border-radius: 15px;
-    transition: background-color .2s, color .2s;
-}
-
-.download-update:hover {
-    background-color: var(--color);
-    color: var(--background);
-    cursor: pointer;
+    transform: translateY(6px);
+    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+    z-index: 1;
+    padding: 0 2rem;
 }
 
 .message.opacity {
     opacity: 1;
+    transform: translateY(0);
 }
 
+/* Download update button */
+.download-update {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 0.5rem 2rem;
+    background: var(--element-color);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.15s;
+}
+.download-update:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+/* Progress bar */
 .progress {
-    position: absolute;
-    top: 410px;
-    left: 106px;
-    width: 189px;
-    height: 10px;
+    position: relative;
+    display: block;
+    width: 180px;
+    height: 3px;
     appearance: none;
-    transition: opacity .2s;
+    border-radius: 3px;
+    margin-top: 16px;
     opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1;
 }
-
-.show {
-    opacity: 1;
-}
+.show { opacity: 1; }
 
 .progress::-webkit-progress-bar {
-    background-color: var(--background);
-    border: solid 1px var(--element-color);
-    border-radius: 10px;
+    background: var(--border);
+    border-radius: 3px;
 }
-
 .progress::-webkit-progress-value {
-    background-color: var(--element-color);
-    border-radius: 10px;
+    background: var(--element-color);
+    border-radius: 3px;
 }

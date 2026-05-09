@@ -1,7 +1,7 @@
 {
     "name": "Micraft-Launcher",
     "preductname": "Micraft Launcher",
-    "version": "3.0.3",
+    "version": "3.0.4",
     "description": "Launcher Minecraft",
     "main": "src/app.js",
     "author": {
@@ -21,6 +21,11 @@
         "ext": "js,html,css",
         "ignore": "**/test"
     },
+    "publish": {
+        "provider": "github",
+        "owner": "KiwisDev",
+        "repo": "MicraftLauncher"
+    },
     "dependencies": {
         "electron-updater": "^6.1.8",
         "minecraft-java-core": "^4.2.1",
@@ -30,10 +35,10 @@
     },
     "devDependencies": {
         "cross-env": "^7.0.3",
-        "electron": "^30.5.1",
+        "electron": "^38.3.0",
         "electron-builder": "^26.0.12",
         "javascript-obfuscator": "^4.1.0",
-        "jimp": "^0.22.12",
+        "jimp": "^1.6.0",
         "nodemon": "^3.1.2",
         "png2icons": "^2.0.1"
     },
