@@ -27,7 +27,6 @@
         "repo": "MicraftLauncher"
     },
     "dependencies": {
-        "better-sqlite3": "^12.9.0",
         "electron-updater": "^6.1.8",
         "minecraft-java-core": "^4.2.1",
         "node-bdd": "^2.0.4",
