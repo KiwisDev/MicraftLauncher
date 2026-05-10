@@ -4,7 +4,7 @@
  */
 
 import { changePanel, accountSelect, database, Slider, config, setStatus, popup, appdata, setBackground } from '../utils.js'
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, webUtils } = require('electron');
 const os = require('os');
 
 class Settings {
@@ -170,7 +170,7 @@ class Settings {
             });
             if (javaPathInputFile.value.replace(".exe", '').endsWith("java") || javaPathInputFile.value.replace(".exe", '').endsWith("javaw")) {
                 let c = await this.db.readData('configClient');
-                let file = javaPathInputFile.files[0].path;
+                let file = webUtils.getPathForFile(javaPathInputFile.files[0]);
                 javaPathInputTxt.value = file;
                 c.java_config.java_path = file;
                 await this.db.updateData('configClient', c);
@@ -314,9 +314,11 @@ class Settings {
         let instanceConfigs = configClient?.instance_java_config || {};
         let instanceCfg = instanceConfigs[instanceName] || {};
 
-        // Java version mode
+        // Java version mode — update name to be instance-scoped to avoid cross-instance conflicts
         let mode = instanceCfg.java_path ? 'custom' : 'auto';
-        document.querySelectorAll('input[name="java-version-mode"]').forEach(r => {
+        const radioGroupName = `java-version-mode-${instanceName}`;
+        document.querySelectorAll('.java-version-radio').forEach(r => {
+            r.name = radioGroupName;
             r.checked = (r.value === mode);
         });
         this.toggleCustomJavaPath(mode === 'custom');
@@ -324,9 +326,9 @@ class Settings {
         let pathText = document.querySelector('.instance-java-path-text');
         pathText.value = instanceCfg.java_path || '';
 
-        // JVM args
+        // JVM args — textarea
         let jvmArgs = instanceCfg.jvm_args || [];
-        this.renderJvmTags(jvmArgs);
+        this.renderJvmTextarea(jvmArgs);
 
         // RAM override
         let ramOverride = instanceCfg.ram_override || false;
@@ -365,15 +367,16 @@ class Settings {
         customPathDiv.style.display = show ? 'flex' : 'none';
     }
 
-    renderJvmTags(args) {
-        let container = document.querySelector('.jvm-tags-container');
-        container.innerHTML = '';
-        for (let arg of args) {
-            let tag = document.createElement('span');
-            tag.classList.add('jvm-tag');
-            tag.innerHTML = `${arg} <span class="jvm-tag-remove" data-arg="${arg}">✕</span>`;
-            container.appendChild(tag);
-        }
+    renderJvmTextarea(args) {
+        let textarea = document.querySelector('.instance-jvm-arg-textarea');
+        if (!textarea) return;
+        textarea.value = args.join('\n');
+        // Auto-resize
+        setTimeout(() => {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 224) + 'px';
+            textarea.style.overflowY = textarea.scrollHeight > 224 ? 'auto' : 'hidden';
+        }, 0);
     }
 
     bindInstanceEvents(instanceName) {
@@ -386,8 +389,8 @@ class Settings {
             return clone;
         };
 
-        // Java version radios
-        document.querySelectorAll('input[name="java-version-mode"]').forEach(r => {
+        // Java version radios (use class selector since name is now instance-scoped)
+        document.querySelectorAll('.java-version-radio').forEach(r => {
             r.addEventListener('change', () => this.toggleCustomJavaPath(r.value === 'custom'));
         });
 
@@ -406,7 +409,7 @@ class Settings {
             });
             let val = fileInput.value;
             if (val.replace('.exe', '').endsWith('java') || val.replace('.exe', '').endsWith('javaw')) {
-                document.querySelector('.instance-java-path-text').value = fileInput.files[0].path;
+                document.querySelector('.instance-java-path-text').value = webUtils.getPathForFile(fileInput.files[0]);
             } else alert('Le fichier doit être java ou javaw');
         });
 
@@ -416,49 +419,28 @@ class Settings {
             this.toggleCustomJavaPath(false);
         });
 
-        // JVM tag remove
-        document.querySelector('.jvm-tags-container').addEventListener('click', async e => {
-            let removeBtn = e.target.closest('.jvm-tag-remove');
-            if (!removeBtn) return;
-            let arg = removeBtn.dataset.arg;
-            let c = await this.db.readData('configClient');
-            let args = c?.instance_java_config?.[instanceName]?.jvm_args || [];
-            args = args.filter(a => a !== arg);
-            if (!c.instance_java_config) c.instance_java_config = {};
-            if (!c.instance_java_config[instanceName]) c.instance_java_config[instanceName] = {};
-            c.instance_java_config[instanceName].jvm_args = args;
-            await this.db.updateData('configClient', c);
-            this.renderJvmTags(args);
-        });
+        // JVM textarea — auto-resize on input
+        let jvmTextarea = cloneAndReplace('.instance-jvm-arg-textarea');
+        const autoResize = (el) => {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 224) + 'px';
+            el.style.overflowY = el.scrollHeight > 224 ? 'auto' : 'hidden';
+        };
+        jvmTextarea.addEventListener('input', () => autoResize(jvmTextarea));
+        // Initial resize
+        setTimeout(() => autoResize(jvmTextarea), 0);
 
-        // JVM add button
-        let addBtn = cloneAndReplace('.instance-jvm-arg-add');
-        addBtn.addEventListener('click', async () => {
-            let input = document.querySelector('.instance-jvm-arg-input');
-            let val = input.value.trim();
-            if (!val) return;
-            let c = await this.db.readData('configClient');
-            if (!c.instance_java_config) c.instance_java_config = {};
-            if (!c.instance_java_config[instanceName]) c.instance_java_config[instanceName] = {};
-            let args = c.instance_java_config[instanceName].jvm_args || [];
-            if (!args.includes(val)) { args.push(val); c.instance_java_config[instanceName].jvm_args = args; }
-            await this.db.updateData('configClient', c);
-            this.renderJvmTags(args);
-            input.value = '';
-        });
-
-        // JVM input Enter key
-        document.querySelector('.instance-jvm-arg-input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') addBtn.click();
-        });
-
-        // JVM presets
+        // JVM presets — append to textarea
         document.querySelectorAll('.jvm-preset-chip').forEach(chip => {
-            chip.addEventListener('click', async () => {
+            chip.addEventListener('click', () => {
                 let arg = chip.dataset.arg;
-                let input = document.querySelector('.instance-jvm-arg-input');
-                input.value = arg;
-                addBtn.click();
+                let current = jvmTextarea.value.trim();
+                // Avoid duplicates
+                let existing = current.split(/\s+/).filter(Boolean);
+                if (!existing.includes(arg)) {
+                    jvmTextarea.value = current ? current + '\n' + arg : arg;
+                    autoResize(jvmTextarea);
+                }
             });
         });
 
@@ -513,14 +495,16 @@ class Settings {
         if (!c.instance_java_config) c.instance_java_config = {};
         if (!c.instance_java_config[instanceName]) c.instance_java_config[instanceName] = {};
 
-        // Java path / mode
-        let mode = document.querySelector('input[name="java-version-mode"]:checked')?.value || 'auto';
+        // Java path / mode — use class selector since name is instance-scoped
+        let mode = document.querySelector('.java-version-radio:checked')?.value || 'auto';
         let javaPath = mode === 'custom' ? document.querySelector('.instance-java-path-text').value.trim() : null;
         c.instance_java_config[instanceName].java_path = javaPath || null;
 
-        // JVM args (already saved incrementally, just sync)
-        let existingArgs = c.instance_java_config[instanceName].jvm_args || [];
-        c.instance_java_config[instanceName].jvm_args = existingArgs;
+        // JVM args — read from textarea, split on whitespace/newlines
+        let jvmTextarea = document.querySelector('.instance-jvm-arg-textarea');
+        let jvmRaw = jvmTextarea ? jvmTextarea.value.trim() : '';
+        let jvmArgs = jvmRaw ? jvmRaw.split(/[\s\n]+/).filter(Boolean) : [];
+        c.instance_java_config[instanceName].jvm_args = jvmArgs;
 
         // RAM override
         let ramToggle = document.querySelector('.instance-ram-override-toggle');

@@ -450,34 +450,26 @@
 .java-version-options { flex-wrap: wrap; gap: 0.5rem; }
 
 /* ── JVM tags ─────────────────────────────────────────────── */
-.jvm-tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    min-height: 2rem;
-    margin-bottom: 0.6rem;
-}
-.jvm-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    background: var(--background-transparent);
-    border: 1.5px solid rgba(255,255,255,0.12);
-    color: var(--color);
-    padding: 0.25rem 0.65rem;
-    border-radius: 20px;
-    font-size: 0.78rem;
+.instance-jvm-arg-textarea {
+    width: 100%;
+    min-height: 2.4rem;
+    max-height: 14rem;
+    resize: none;
+    overflow-y: hidden;
+    box-sizing: border-box;
     font-family: monospace;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
 }
-.jvm-tag-remove { cursor: pointer; color: #ff6b6b; font-size: 0.7rem; padding: 0 2px; }
-.jvm-tag-remove:hover { color: #ff2c2c; }
-
-.jvm-add-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+.instance-jvm-arg-textarea:focus {
+    overflow-y: auto;
 }
-.instance-jvm-arg-input { flex: 1; }
 
 .jvm-presets-label {
     font-size: 0.75rem;

@@ -72,17 +72,17 @@
                 </div>
                 <div class="java-version-options settings-elements">
                     <label class="radio-option">
-                        <input type="radio" name="java-version-mode" value="auto" checked>
+                        <input type="radio" class="java-version-radio" name="java-version-mode" value="auto" checked>
                         <span class="radio-label">Automatique (Fourni)</span>
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="java-version-mode" value="custom">
+                        <input type="radio" class="java-version-radio" name="java-version-mode" value="custom">
                         <span class="radio-label">Chemin personnalisé</span>
                     </label>
                 </div>
                 <div class="instance-java-custom-path settings-elements" style="display:none">
                     <input type="text" class="instance-java-path-text modern-input" placeholder="Chemin vers java ou javaw..." disabled>
-                    <input type="file" class="instance-java-path-file" accept="application/octet-stream" />
+                    <input type="file" class="instance-java-path-file" accept="*" />
                     <div class="java-path-box">
                         <div class="instance-java-path-set btn-modern btn-primary">Choisir</div>
                         <div class="instance-java-path-reset btn-modern btn-secondary">Effacer</div>
@@ -101,11 +101,7 @@
                     Exemples : <code>-XX:+UseG1GC</code>, <code>-Dfml.ignoreInvalidMinecraftCertificates=true</code>
                 </div>
                 <div class="jvm-args-editor settings-elements" style="flex-direction:column; align-items:stretch;">
-                    <div class="jvm-tags-container"></div>
-                    <div class="jvm-add-row">
-                        <input type="text" class="instance-jvm-arg-input modern-input" placeholder="Ajouter un argument JVM...">
-                        <div class="instance-jvm-arg-add btn-modern btn-primary">+ Ajouter</div>
-                    </div>
+                    <textarea class="instance-jvm-arg-textarea modern-input" placeholder="-XX:+UseG1GC&#10;-XX:+UnlockExperimentalVMOptions&#10;-Xms512m" rows="1" spellcheck="false"></textarea>
                     <div class="jvm-presets-label">Présets rapides :</div>
                     <div class="jvm-presets">
                         <div class="jvm-preset-chip" data-arg="-XX:+UseG1GC">G1GC</div>

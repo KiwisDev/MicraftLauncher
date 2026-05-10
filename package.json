@@ -1,7 +1,7 @@
 {
     "name": "Micraft-Launcher",
     "preductname": "Micraft Launcher",
-    "version": "3.0.5",
+    "version": "3.0.6",
     "description": "Launcher Minecraft",
     "main": "src/app.js",
     "author": {
