@@ -2,78 +2,71 @@
  * @author Luuxis
  * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0
  */
-const Database = require('better-sqlite3');
-const { ipcRenderer } = require('electron');
-const path = require('path');
-const fs = require('fs');
+
+const { NodeBDD, DataType } = require('node-bdd');
+const nodedatabase = new NodeBDD()
+const { ipcRenderer } = require('electron')
 
 let dev = process.env.NODE_ENV === 'dev';
 
 class database {
-    constructor() {
-        this._dbs = {};
+    async creatDatabase(tableName, tableConfig) {
+        return await nodedatabase.intilize({
+            databaseName: 'Databases',
+            fileType: dev ? 'sqlite' : 'db',
+            tableName: tableName,
+            path: `${await ipcRenderer.invoke('path-user-data')}`,
+            tableColumns: tableConfig,
+        });
     }
 
-    _getDbPath(tableName) {
-        const userDataPath = ipcRenderer.sendSync('path-user-data-sync');
-        const dbDir = path.join(userDataPath, '')
-        console.log(dbDir);
-        if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
-
-        return path.join(dbDir, `${tableName}.db`);
+    async getDatabase(tableName) {
+        console.log("recherche de données");
+        return await this.creatDatabase(tableName, {
+            json_data: DataType.TEXT.TEXT,
+        });
     }
 
-    _getDb(tableName) {
-        if (this._dbs[tableName]) return this._dbs[tableName];
-
-        const dbPath = this._getDbPath(tableName);
-        const db = new Database(dbPath);
-
-        db.exec(`
-            CREATE TABLE IF NOT EXISTS ${tableName} (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                json_data TEXT NOT NULL
-            )
-        `);
-
-        this._dbs[tableName] = db;
-        return db;
+    async createData(tableName, data) {
+        let table = await this.getDatabase(tableName);
+        data = await nodedatabase.createData(table, { json_data: JSON.stringify(data) })
+        let id = data.id
+        data = JSON.parse(data.json_data)
+        data.ID = id
+        return data
     }
 
-    createData(tableName, data) {
-        const db = this._getDb(tableName);
-        const stmt = db.prepare(`INSERT INTO ${tableName} (json_data) VALUES (?)`);
-        const result = stmt.run(JSON.stringify(data));
-        return { ...data, ID: result.lastInsertRowid };
+    async readData(tableName, key = 1) {
+        let table = await this.getDatabase(tableName);
+        console.log(table);
+        let data = await nodedatabase.getDataById(table, key)
+        if (data) {
+            let id = data.id
+            data = JSON.parse(data.json_data)
+            data.ID = id
+        }
+        return data ? data : undefined
     }
 
-    readData(tableName, key = 1) {
-        const db = this._getDb(tableName);
-        const row = db.prepare(`SELECT * FROM ${tableName} WHERE id = ?`).get(key);
-        if (!row) return undefined;
-        return { ...JSON.parse(row.json_data), ID: row.id };
+    async readAllData(tableName) {
+        let table = await this.getDatabase(tableName);
+        let data = await nodedatabase.getAllData(table)
+        return data.map(info => {
+            let id = info.id
+            info = JSON.parse(info.json_data)
+            info.ID = id
+            return info
+        })
     }
 
-    readAllData(tableName) {
-        const db = this._getDb(tableName);
-        const rows = db.prepare(`SELECT * FROM ${tableName}`).all();
-        return rows.map(row => ({ ...JSON.parse(row.json_data), ID: row.id }));
+    async updateData(tableName, data, key = 1) {
+        let table = await this.getDatabase(tableName);
+        await nodedatabase.updateData(table, { json_data: JSON.stringify(data) }, key)
     }
 
-    updateData(tableName, data, key = 1) {
-        const db = this._getDb(tableName);
-        db.prepare(`UPDATE ${tableName} SET json_data = ? WHERE id = ?`)
-          .run(JSON.stringify(data), key);
-    }
-
-    deleteData(tableName, key = 1) {
-        const db = this._getDb(tableName);
-        db.prepare(`DELETE FROM ${tableName} WHERE id = ?`).run(key);
-    }
-
-    closeAll() {
-        for (const db of Object.values(this._dbs)) db.close();
-        this._dbs = {};
+    async deleteData(tableName, key = 1) {
+        let table = await this.getDatabase(tableName);
+        await nodedatabase.deleteData(table, key)
     }
 }
 
