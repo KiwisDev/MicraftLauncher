@@ -11,6 +11,10 @@
     overflow: hidden;
 }
 
+#instance-java-tab {
+  overflow: scroll;
+}
+
 /* ── Background image (set dynamically via JS) ───────────── */
 .home .container::before {
     content: '';

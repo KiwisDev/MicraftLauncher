@@ -11,10 +11,11 @@
     },
     "url": "http://37.187.139.41:8080/launcher-files/",
     "scripts": {
-        "start": "cross-env-shell NODE_ENV=dev electron .",
-        "dev": "cross-env-shell DEV_TOOL=open nodemon --exec npm start",
+        "start": "cross-env-shell electron .",
+        "dev": "cross-env-shell DEV_TOOL=open NODE_ENV=dev nodemon --exec npm start",
         "build": "node build.js --obf=true --build=platform",
-        "icon": "node build.js --icon=https://raw.githubusercontent.com/luuxis/Selvania-Launcher/master/src/assets/images/icon.png"
+        "icon": "node build.js --icon=https://raw.githubusercontent.com/luuxis/Selvania-Launcher/master/src/assets/images/icon.png",
+        "postinstall": "electron-rebuild -f -w better-sqlite3"
     },
     "license": "CCANC",
     "nodemonConfig": {
@@ -27,6 +28,7 @@
         "repo": "MicraftLauncher"
     },
     "dependencies": {
+        "better-sqlite3": "^12.9.0",
         "electron-updater": "^6.1.8",
         "minecraft-java-core": "^4.2.1",
         "node-bdd": "^2.0.4",
@@ -37,6 +39,7 @@
         "cross-env": "^7.0.3",
         "electron": "^38.3.0",
         "electron-builder": "^26.0.12",
+        "electron-rebuild": "^3.2.9",
         "javascript-obfuscator": "^4.1.0",
         "jimp": "^1.6.0",
         "nodemon": "^3.1.2",

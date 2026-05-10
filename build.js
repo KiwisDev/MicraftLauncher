@@ -72,6 +72,10 @@ class Index {
                 directories: { "output": "dist" },
                 compression: 'maximum',
                 asar: true,
+                asarUnpack: [
+                    "**/*.node",
+                    "**/node_modules/sqlite3/**"
+                ],
                 publish: [{
                     provider: "github",
                     releaseType: 'release',

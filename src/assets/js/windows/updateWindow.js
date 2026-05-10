@@ -40,7 +40,7 @@ function createWindow() {
     updateWindow.loadFile(path.join(`${app.getAppPath()}/src/index.html`));
     updateWindow.once('ready-to-show', () => {
       if (updateWindow) {
-          updateWindow.webContents.openDevTools({ mode: 'detach' }); // ← ajoute cette ligne
+          if (dev) updateWindow.webContents.openDevTools({ mode: 'detach' });
           updateWindow.show();
       }
     });

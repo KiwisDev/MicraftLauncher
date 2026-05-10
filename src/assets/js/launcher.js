@@ -133,12 +133,15 @@ class Launcher {
         let accounts = await this.db.readAllData('accounts')
         let configClient = await this.db.readData('configClient')
         let account_selected = configClient ? configClient.account_selected : null
+        console.log(accounts);
         let popupRefresh = new popup();
 
         if (accounts?.length) {
             for (let account of accounts) {
                 let account_ID = account.ID
                 if (account.error) {
+                    console.log("errur compte BDD");
+                    
                     await this.db.deleteData('accounts', account_ID)
                     continue
                 }

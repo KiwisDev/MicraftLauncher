@@ -1,7 +1,6 @@
 /**
  * @author Luuxis / Tactician_sh
- * @license CC-BY-NC 4.0
- *
+ * @license CC-BY-NC 4.0 *
  * MAIN PROCESS — Electron entry point
  */
 
@@ -45,20 +44,6 @@ function shouldSkipUpdater() {
 app.whenReady().then(() => {
     createUpdateWindow();
 
-    if (shouldSkipUpdater()) {
-        console.log('[AutoUpdater] Skip — dev ou Linux non-AppImage');
-        // On attend que la fenêtre soit prête avant d'envoyer l'événement
-        const win = getUpdateWindow();
-        if (win?.webContents.isLoading()) {
-            win.webContents.once('did-finish-load', () => {
-                getUpdateWindow()?.webContents.send('update-not-available');
-            });
-        } else {
-            getUpdateWindow()?.webContents.send('update-not-available');
-        }
-        return;
-    }
-
     autoUpdater.checkForUpdates().catch(err => {
         console.error('[AutoUpdater]', err.message);
         getUpdateWindow()?.webContents.send('error', err);
@@ -72,16 +57,13 @@ app.on('window-all-closed', () => {
 // ── Auto-updater ─────────────────────────────────────────────────────────────
 autoUpdater.autoDownload = false;
 
-autoUpdater.on('update-available',     ()         => { 
-  getUpdateWindow()?.webContents.send('updateAvailable');
-  console.log("AHHAHAH");
+autoUpdater.on('update-available',     ()         => {
+    getUpdateWindow()?.webContents.send('updateAvailable');
 });
 autoUpdater.on('update-not-available', ()         => getUpdateWindow()?.webContents.send('update-not-available'));
 autoUpdater.on('error',                (err)      => getUpdateWindow()?.webContents.send('error', err));
 autoUpdater.on('download-progress',    (progress) => getUpdateWindow()?.webContents.send('download-progress', progress));
 autoUpdater.on('update-downloaded',    ()         => autoUpdater.quitAndInstall(false, true));
-
-// ── IPC — updater ────────────────────────────────────────────────────────────
 
 // ── IPC — Microsoft OAuth ────────────────────────────────────────────────────
 ipcMain.handle('Microsoft-window', async (event, client_id) => {
@@ -91,7 +73,6 @@ ipcMain.handle('Microsoft-window', async (event, client_id) => {
     try {
         account = await msAuth.getAuth();
     } catch (err) {
-        // L'utilisateur a fermé la fenêtre ou annulé
         return 'cancel';
     }
 
@@ -99,7 +80,7 @@ ipcMain.handle('Microsoft-window', async (event, client_id) => {
     return account;
 });
 
-// index.js uses ipcRenderer.invoke('update-app') → must be ipcMain.handle
+// ── IPC — updater ────────────────────────────────────────────────────────────
 ipcMain.handle('update-app', async () => {
     if (shouldSkipUpdater()) {
         setTimeout(() => getUpdateWindow()?.webContents.send('update-not-available'), 0);
@@ -120,21 +101,21 @@ ipcMain.on('update-window-progress-reset', () => getUpdateWindow()?.setProgressB
 
 // ── IPC — main window ────────────────────────────────────────────────────────
 ipcMain.on('main-window-open', () => {
-    createMainWindow();        // créer d'abord
-    destroyUpdateWindow();     // détruire ensuite (évite window-all-closed prématuré)
+    createMainWindow();
+    destroyUpdateWindow();
 });
 
-ipcMain.on('main-window-close',          () => { destroyMainWindow(); app.quit(); });
+ipcMain.on('main-window-close', () => { destroyMainWindow(); app.quit(); });
 ipcMain.on('main-window-minimize',       () => getMainWindow()?.minimize());
 ipcMain.on('main-window-maximize',       () => {
     const win = getMainWindow();
     if (!win) return;
     win.isMaximized() ? win.unmaximize() : win.maximize();
 });
-ipcMain.on('main-window-hide',           () => getMainWindow()?.hide());
-ipcMain.on('main-window-show',           () => getMainWindow()?.show());
-ipcMain.on('main-window-dev-tools',      () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }));
-ipcMain.on('main-window-dev-tools-close',() => getMainWindow()?.webContents.closeDevTools());
+ipcMain.on('main-window-hide',            () => getMainWindow()?.hide());
+ipcMain.on('main-window-show',            () => getMainWindow()?.show());
+ipcMain.on('main-window-dev-tools',       () => getMainWindow()?.webContents.openDevTools({ mode: 'detach' }));
+ipcMain.on('main-window-dev-tools-close', () => getMainWindow()?.webContents.closeDevTools());
 
 ipcMain.on('main-window-progress', (e, { progress, size }) => {
     if (progress && size) getMainWindow()?.setProgressBar(progress / size);
@@ -144,11 +125,14 @@ ipcMain.on('main-window-progress-reset', () => getMainWindow()?.setProgressBar(-
 
 // ── IPC — utilities ──────────────────────────────────────────────────────────
 
-// database.js: `${path-user-data}${dev ? '../..' : '/databases'}`
-// In dev the sqlite file ends up at <userData>/../../databases → project root /databases
+// Async — utilisé pour d'autres besoins éventuels
 ipcMain.handle('path-user-data', () => app.getPath('userData') + '/');
 
-// utils.js / settings.js use appdata() → ipcRenderer.invoke('appData')
+// Synchrone — requis par better-sqlite3 dans database.js
+ipcMain.on('path-user-data-sync', (event) => {
+    event.returnValue = app.getPath('userData');
+});
+
 ipcMain.handle('appData', () => app.getPath('appData'));
 
 ipcMain.handle('is-dark-theme', (e, theme) => {
