@@ -98,8 +98,8 @@ class Splash {
     }
 
     async dowloadUpdate() {
-        const repoURL = pkg.repository.url.replace("git+", "").replace(".git", "").replace("https://gitlab.com/", "").split("/");
-        const githubAPI = await nodeFetch('https://gitlab.com/api/v4').then(res => res.json()).catch(err => err);
+        const repoURL = pkg.repository.url.replace("git+", "").replace(".git", "").replace("https://github.com/", "").split("/");
+        const githubAPI = await nodeFetch('https://api.github.com').then(res => res.json()).catch(err => err);
 
         const githubAPIRepoURL = githubAPI.repository_url.replace("{owner}", repoURL[0]).replace("{repo}", repoURL[1]);
         const githubAPIRepo = await nodeFetch(githubAPIRepoURL).then(res => res.json()).catch(err => err);
