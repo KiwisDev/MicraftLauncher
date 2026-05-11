@@ -70,7 +70,7 @@ class Index {
                 extraMetadata: { main: 'app/app.js' },
                 files: ["app/**/*", "package.json", "LICENSE.md"],
                 directories: { "output": "dist" },
-                compression: 'maximum',
+                compression: 'store',
                 asar: true,
                 asarUnpack: [
                     "**/*.node",
